@@ -10,7 +10,7 @@
 
 ## Main Functions of Label refresh and label mask
 
-### Class: `PLM`
+### Class: `PLM` ---Label Mask
 
 The `PLM` class is responsible for updating class ratios based on the divergence between predicted and actual labels.
 
@@ -22,7 +22,7 @@ The `PLM` class is responsible for updating class ratios based on the divergence
 - **`__init__(self, r_c, lambda_param)`**: Initializes the `PLM` class with the given class ratios and lambda parameter.
 - **`update_ratios(self, labels, predictions)`**: Updates the class ratios based on the Kullback-Leibler (KL) divergence between the predicted and actual label distributions. The method calculates the divergence for both positive and negative samples, normalizes these divergences, and updates the class ratios accordingly.
 
-### Function: `update_H`
+### Function: `update_H` --- Label Refresh
 
 This function updates the prediction history `H` for each sample based on the current predictions.
 
@@ -35,7 +35,7 @@ This function updates the prediction history `H` for each sample based on the cu
 #### Returns:
 - `H`: The updated prediction history.
 
-### Function: `update_E`
+### Function: `update_E` --- Label Refresh
 
 This function updates the entropy matrix `E` based on the prediction history stored in `H`.
 
@@ -93,11 +93,7 @@ This function updates the dataset labels based on the entropy matrix `E` and a g
    ```
 
 5. **Update dataset labels**:
-   ```python
-   dataset = TensorDataset(torch.tensor([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]), torch.tensor([[1, 0], [0, 1], [1, 1]]))
-   threshold = 0.5  # Entropy threshold
-   updated_dataset = update_dataset_label(E, dataset, ids, label_dim=2, threshold=threshold)
-   ```
+
 
 ## Notes
 
