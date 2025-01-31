@@ -93,7 +93,50 @@ This function updates the dataset labels based on the entropy matrix `E` and a g
    ```
 
 5. **Update dataset labels**:
+```python
+   for epoch in range(num_epochs + 1):
+        net.train()
+        all_y_pred = []
+        all_y_true = []
+        custom_dataloader.set_epoch(epoch)
 
+        for idx, x, y in custom_dataloader:
+            x, y = x.to(device), y.to(device)
+            optimizer.zero_grad()
+            outputs = net(x)
+            
+            loss_dict = net.loss_function_train(outputs, y, r_c,epoch)
+            loss = loss_dict['Loss']
+            loss.backward()
+            optimizer.step()
+            global_step += 1
+            update_learning_rate(optimizer, global_step, warmup_steps, lr)
+            
+
+#             binary_outputs = torch.where(outputs[configs['out_index']] >= 0.5, torch.tensor(1.0, device=device), torch.tensor(0.0, device=device))
+            all_y_pred.append(outputs[configs['out_index']].detach())
+            all_y_true.append(y.detach())
+
+        all_y_pred = torch.cat(all_y_pred, dim=0)
+        all_y_true = torch.cat(all_y_true, dim=0)
+        
+        # upadta r_c
+        r_c = plm.update_ratios(all_y_true.cpu().numpy(), all_y_pred.cpu().numpy())
+        
+        
+        # upadta H(E) A      
+        custom_dataloader.E = update_E(custom_dataloader.H, custom_dataloader.E, generate_idx, label_dim)
+        custom_dataloader.dataset = update_dataset_label(custom_dataloader.E, custom_dataloader.dataset, generate_idx, label_dim,threshold)
+        
+        writer.add_scalar('train/loss', loss.item(), epoch)
+        
+        # EVAL
+        auc, best_model_state = evaluate_model(net, validation_dataloader, best_auc, best_model_state, epoch)
+    
+    # BEST EVAL FOR TEST
+    net.load_state_dict(best_model_state)
+    mets = eval_metrics(net, [macro_f1, micro_f1, macro_averaging_auc, ranking_loss, hamming_loss, one_error], test_dataset_new, configs['batch_
+    ```
 
 ## Notes
 
