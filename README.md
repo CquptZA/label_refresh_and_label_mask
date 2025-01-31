@@ -135,8 +135,9 @@ This function updates the dataset labels based on the entropy matrix `E` and a g
     
     # BEST EVAL FOR TEST
     net.load_state_dict(best_model_state)
-    mets = eval_metrics(net, [macro_f1, micro_f1, macro_averaging_auc, ranking_loss, hamming_loss, one_error], test_dataset_new, configs['batch_
-    ```
+    mets = eval_metrics(net, [macro_f1, micro_f1, macro_averaging_auc, ranking_loss, hamming_loss, one_error], test_dataset_new)
+
+```
 
 ## Notes
 
